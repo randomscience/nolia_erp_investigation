@@ -1,0 +1,36 @@
+
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+
+import '@xyflow/react/dist/style.css';
+
+import { FiMoon, FiSun, FiX } from "react-icons/fi";
+
+export const LeftDrawer: React.FC<{
+    drawerOpen: boolean;
+    onClose: () => void;
+    onLogout: () => void;
+    colorMode: 'light' | 'dark';
+    onToggleColorMode: () => void;
+}> = (props) => {
+
+    return <Drawer anchor="left" open={props.drawerOpen} onClose={props.onClose}>
+        <Box sx={{ width: 320, maxWidth: '85vw', p: 3 }} role="presentation">
+            <IconButton aria-label="Close menu" onClick={props.onClose} sx={{ display: 'block', ml: 'auto' }}>
+                <FiX size={24} />
+            </IconButton>
+            <h2>Menu</h2>
+            <Button
+                fullWidth
+                startIcon={props.colorMode === 'light' ? <FiMoon /> : <FiSun />}
+                onClick={props.onToggleColorMode}
+                sx={{ justifyContent: 'flex-start', mb: 1 }}
+            >
+                Switch to {props.colorMode === 'light' ? 'dark' : 'light'} mode
+            </Button>
+            <button onClick={props.onLogout}>Logout</button>
+        </Box>
+    </Drawer>
+}
