@@ -27,7 +27,7 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
     const [companiesList, setCompaniesList] = useState<RecordModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
-    const [selected, setSelected] = useState<String>('');
+    const [_, setSelected] = useState<String>('');
     const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
 
 

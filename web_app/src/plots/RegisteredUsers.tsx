@@ -28,7 +28,7 @@ export const RegisteredUsers = ({ onSelect, selectedUser }: {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
-    const [selected, setSelected] = useState<String>('');
+    const [_, setSelected] = useState<String>('');
 
 
     useEffect(() => {
