@@ -64,7 +64,7 @@ export default function UserGraph({
             marginBottom: "50px",
             marginLeft: "50px",
         }}>
-            <h2>Managed companies graph</h2>
+            <h3 style={{ textAlign: 'left' }}>Managed companies graph</h3>
             {!selectedUser && <p>Select a user to view their managed companies.</p>}
             <div
                 style={{

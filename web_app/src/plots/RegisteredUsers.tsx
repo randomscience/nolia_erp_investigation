@@ -12,12 +12,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { RecordModel } from 'pocketbase';
 import { pb } from '../constants';
 import { pbItemUrl } from '../helpers/PBFunctions';
 import { RecordDetailsDialog } from '../widgets/RecordDetailsDialog';
 import { FiEye } from 'react-icons/fi';
+import RadioGroup from '@mui/material/RadioGroup';
 
 export const RegisteredUsers = ({ onSelect, selectedUser }: {
     onSelect: (v: RecordModel) => void;
@@ -27,6 +28,8 @@ export const RegisteredUsers = ({ onSelect, selectedUser }: {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
+    const [selected, setSelected] = useState<String>('');
+
 
     useEffect(() => {
         let isActive = true;
@@ -53,64 +56,64 @@ export const RegisteredUsers = ({ onSelect, selectedUser }: {
     return <Box sx={{ mx: 6, my: 3 }}>
 
         {isLoading ? <CircularProgress size={24} aria-label="Loading users" /> : loadError ? <p>{loadError}</p> : (
-            // <RadioGroup
-            //   aria-label="Select a user"
-            //   name="loaded-users"
-            //   value={selectedUserId}
-            //   onChange={(event) => setSelectedUserId(event.target.value)}
-            // >
-            <TableContainer component={Paper} sx={{ maxHeight: 360, border: 1, borderColor: 'divider', borderRadius: 1, boxShadow: 'none' }}>
-                <Table stickyHeader size="small" aria-label="Loaded users">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell padding="checkbox" />
-                            <TableCell>Id</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Surname</TableCell>
-                            <TableCell>Verified</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Created</TableCell>
-                            <TableCell>Details</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {usersList.map((user) => (
-                            <TableRow
-                                key={user.id}
-                                hover
-                                selected={selectedUser?.id === user.id}
-                                onClick={() => onSelect(user)}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                <TableCell padding="checkbox">
-                                    <Radio value={user.id} slotProps={{ input: { 'aria-label': `Select ${user.email || user.id}` } }} />
-                                </TableCell>
-                                <TableCell><a href={pbItemUrl('users', user.id)}>{user.id || 'Null'}</a></TableCell>
-                                <TableCell>{user.name || 'Null'}</TableCell>
-                                <TableCell>{user.surname || 'Null'}</TableCell>
-                                <TableCell>{user.verified || 'Null'}</TableCell>
-                                <TableCell>{user.email || 'Null'}</TableCell>
-                                <TableCell>{user.created ? new Date(user.created).toLocaleDateString() : 'Unknown'}</TableCell>
-                                <TableCell>
-                                    <Tooltip title="View full record">
-                                        <IconButton
-                                            aria-label={`View details for ${user.email || user.id}`}
-                                            size="small"
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setDetailsRecord(user);
-                                            }}
-                                        >
-                                            <FiEye />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
+            <RadioGroup
+                aria-label="Select a user"
+                name="loaded-users"
+                // value={user.id}
+                onChange={(event) => setSelected(event.target.value)}
+            >
+                <TableContainer component={Paper} sx={{ maxHeight: 360, border: 1, borderColor: 'divider', borderRadius: 1, boxShadow: 'none' }}>
+                    <Table stickyHeader size="small" aria-label="Loaded users">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell padding="checkbox" />
+                                <TableCell>Id</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Surname</TableCell>
+                                <TableCell>Verified</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Created</TableCell>
+                                <TableCell>Details</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
+                        </TableHead>
+                        <TableBody>
+                            {usersList.map((user) => (
+                                <TableRow
+                                    key={user.id}
+                                    hover
+                                    selected={selectedUser?.id === user.id}
+                                    onClick={() => onSelect(user)}
+                                    sx={{ cursor: 'pointer' }}
+                                >
+                                    <TableCell padding="checkbox">
+                                        <Radio value={user.id} slotProps={{ input: { 'aria-label': `Select ${user.email || user.id}` } }} />
+                                    </TableCell>
+                                    <TableCell><a href={pbItemUrl('users', user.id)}>{user.id || 'Null'}</a></TableCell>
+                                    <TableCell>{user.name || 'Null'}</TableCell>
+                                    <TableCell>{user.surname || 'Null'}</TableCell>
+                                    <TableCell>{user.verified || 'Null'}</TableCell>
+                                    <TableCell>{user.email || 'Null'}</TableCell>
+                                    <TableCell>{user.created ? new Date(user.created).toLocaleDateString() : 'Unknown'}</TableCell>
+                                    <TableCell>
+                                        <Tooltip title="View full record">
+                                            <IconButton
+                                                aria-label={`View details for ${user.email || user.id}`}
+                                                size="small"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    setDetailsRecord(user);
+                                                }}
+                                            >
+                                                <FiEye />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </RadioGroup>
         )}
         <RecordDetailsDialog record={detailsRecord} onClose={() => setDetailsRecord(undefined)} />
     </Box>;

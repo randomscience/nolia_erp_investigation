@@ -11,13 +11,13 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { RecordModel } from 'pocketbase';
 import { pb } from '../constants';
 import { pbItemUrl } from '../helpers/PBFunctions';
 import { RecordDetailsDialog } from '../widgets/RecordDetailsDialog';
 import { FiEye } from 'react-icons/fi';
+import RadioGroup from '@mui/material/RadioGroup';
 
 
 export const CreatedCompanies = ({ onSelect, selectedCompany }: {
@@ -27,7 +27,10 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
     const [companiesList, setCompaniesList] = useState<RecordModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
+    const [selected, setSelected] = useState<String>('');
     const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
+
+
 
     useEffect(() => {
         let isActive = true;
@@ -73,60 +76,62 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
 
     return <Box sx={{ mx: 6, my: 3 }}>
         {isLoading ? <CircularProgress size={24} aria-label="Loading users" /> : loadError ? <p>{loadError}</p> : (
-            // <RadioGroup
-            //   aria-label="Select a user"
-            //   name="loaded-users"
-            //   value={selectedCompany?.id}
-            //   onChange={(event) => onSelect(event.target.value)}
-            // >
-            <TableContainer component={Paper} sx={{ maxHeight: 360, border: 1, borderColor: 'divider', borderRadius: 1, boxShadow: 'none' }}>
-                <Table stickyHeader size="small" aria-label="Loaded users">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell padding="checkbox" />
-                            <TableCell>Id</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>FillPercentage</TableCell>
-                            <TableCell>Created</TableCell>
-                            <TableCell>Details</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {companiesList.map((company: RecordModel) => (
-                            <TableRow
-                                key={company.id}
-                                hover
-                                selected={selectedCompany?.id === company.id}
-                                onClick={() => onSelect(company)}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                <TableCell padding="checkbox">
-                                    <Radio value={company.id} slotProps={{ input: { 'aria-label': `Select ${company.email || company.id}` } }} />
-                                </TableCell>
-                                <TableCell><a href={pbItemUrl('service_hosts', company.id)}>{company.id || 'Null'}</a></TableCell>
-                                <TableCell>{company.name || 'Null'}</TableCell>
-                                <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
-                                <TableCell>{company.created ? new Date(company.created).toLocaleDateString() : 'Unknown'}</TableCell>
-                                <TableCell>
-                                    <Tooltip title="View full record">
-                                        <IconButton
-                                            aria-label={`View details for ${company.name || company.id}`}
-                                            size="small"
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setDetailsRecord(company);
-                                            }}
-                                        >
-                                            <FiEye />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
+            <RadioGroup
+                aria-label="Select a user"
+                name="loaded-users"
+                value={selectedCompany?.id}
+                onChange={(event) => setSelected(event.target.value)}
+            >
+                <TableContainer component={Paper} sx={{ maxHeight: 360, border: 1, borderColor: 'divider', borderRadius: 1, boxShadow: 'none' }}>
+                    <Table stickyHeader size="small" aria-label="Loaded users">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell padding="checkbox" />
+                                <TableCell>Id</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>FillPercentage</TableCell>
+                                <TableCell>Created</TableCell>
+                                <TableCell>Details</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            // </RadioGroup>
+                        </TableHead>
+                        <TableBody>
+                            {companiesList.map((company: RecordModel) => (
+                                <TableRow
+                                    key={company.id}
+                                    hover
+                                    selected={selectedCompany?.id === company.id}
+                                    onClick={() => onSelect(company)}
+                                    sx={{ cursor: 'pointer' }}
+                                >
+                                    <TableCell padding="checkbox">
+                                        <Radio value={company.id} slotProps={{ input: { 'aria-label': `Select ${company.email || company.id}` } }} />
+                                    </TableCell>
+                                    <TableCell><a href={pbItemUrl('service_hosts', company.id)}>{company.id || 'Null'}</a></TableCell>
+                                    <TableCell>{company.name || 'Null'}</TableCell>
+                                    <TableCell>{company.status || 'Null'}</TableCell>
+                                    <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
+                                    <TableCell>{company.created ? new Date(company.created).toLocaleDateString() : 'Unknown'}</TableCell>
+                                    <TableCell>
+                                        <Tooltip title="View full record">
+                                            <IconButton
+                                                aria-label={`View details for ${company.name || company.id}`}
+                                                size="small"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    setDetailsRecord(company);
+                                                }}
+                                            >
+                                                <FiEye />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </RadioGroup>
         )}
         <RecordDetailsDialog record={detailsRecord} onClose={() => setDetailsRecord(undefined)} />
     </Box>;

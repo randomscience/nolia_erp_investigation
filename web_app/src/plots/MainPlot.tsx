@@ -1,17 +1,20 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LineChart, lineClasses } from '@mui/x-charts/LineChart';
 import '@xyflow/react/dist/style.css';
-import { pb, pocketbaseUrl } from '../constants';
+import { pb } from '../constants';
 import type { RecordModel } from 'pocketbase';
+import { FiRefreshCw } from 'react-icons/fi';
 
-const dashboardDates = Array.from({ length: 30 }, (_, index) => {
-    const date = new Date();
-    date.setUTCHours(0, 0, 0, 0);
-    date.setUTCDate(date.getUTCDate() - (29 - index));
-    return date;
-});
+// const dashboardDates = Array.from({ length: 30 }, (_, index) => {
+//     const date = new Date();
+//     date.setUTCHours(0, 0, 0, 0);
+//     date.setUTCDate(date.getUTCDate() - (29 - index));
+//     return date;
+// });
 
 const loginsData = {
 
@@ -24,7 +27,7 @@ const loginsData = {
 
 }
 
-function getDates(days = 180): string[] {
+function getDates(days = 90): string[] {
     const today = new Date();
     var dates: string[] = [];
 
@@ -75,7 +78,7 @@ async function getOffersOverTime(): Promise<[number[], number[]]> {
             }
     }
 
-    return [Array.from(institutionsForCompanies, ([date, count]) => count), Array.from(offersForSeniors, ([date, count]) => count)];
+    return [Array.from(institutionsForCompanies, ([_, count]) => count), Array.from(offersForSeniors, ([_, count]) => count)];
 };
 
 
@@ -118,7 +121,7 @@ async function getInstitutionOverTime(
             }
     }
 
-    return [Array.from(firms, ([date, count]) => count), Array.from(institutions, ([date, count]) => count)];
+    return [Array.from(firms, ([_, count]) => count), Array.from(institutions, ([_, count]) => count)];
 };
 
 async function getRegistrationsOverTime(
@@ -155,42 +158,52 @@ async function getRegistrationsOverTime(
         }
     }
 
-    return Array.from(counts, ([date, count]) => count);
+    return Array.from(counts, ([_, count]) => count);
 }
 
 export default function MainPlot() {
     // Simple plot displaying registered users; companies; offers etc.
     const [dailyCounts, setDailyCounts] = useState<{ logins: number[]; companyCreations: number[]; institutionCreations: number[]; institutionOfferCreations: number[]; seniorOfferCreations: number[]; xLabels: string[]; }>(loginsData);
+    const isDarkMode = useTheme().palette.mode === 'dark';
+    const seriesColors = isDarkMode
+        ? ['#70B7F5', '#FF8977', '#55D6AA', '#E497CD', '#F0C66E']
+        : ['#1769AA', '#C74634', '#087F5B', '#A34A86', '#A86C00'];
 
-    const [isLoading, setIsLoading] = useState(true);
+    const loadUserCounts = useCallback(async () => {
+        var users = await getRegistrationsOverTime();
+        var [institutions, firms] = await getInstitutionOverTime();
+        var [offersForCompanies, offersForSeniors] = await getOffersOverTime();
 
-    useEffect(() => {
-        const loadUserCounts = async () => {
-            setIsLoading(true);
-            var users = await getRegistrationsOverTime();
-            var [institutions, firms] = await getInstitutionOverTime();
-            var [offersForCompanies, offersForSeniors] = await getOffersOverTime();
-
-            var dailyCountsCopy = dailyCounts;
-
-            dailyCountsCopy.logins = users;
-            dailyCountsCopy.companyCreations = firms;
-            dailyCountsCopy.institutionCreations = institutions;
-            dailyCountsCopy.seniorOfferCreations = offersForSeniors;
-            dailyCountsCopy.institutionOfferCreations = offersForCompanies;
-
-
-            setDailyCounts(dailyCountsCopy);
-            setIsLoading(false);
-        };
-
-        void loadUserCounts();
+        setDailyCounts((currentCounts) => ({
+            ...currentCounts,
+            logins: users,
+            companyCreations: firms,
+            institutionCreations: institutions,
+            seniorOfferCreations: offersForSeniors,
+            institutionOfferCreations: offersForCompanies,
+        }));
     }, []);
 
 
-    // console.log(dailyCounts)
-    return (
+    useEffect(() => {
+        void loadUserCounts();
+    }, [loadUserCounts]);
 
+
+    // console.log(dailyCounts)
+    return <>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2, mx: 6, mt: 2 }}>
+            <h3 style={{ margin: 0 }}>Aktywność przez ostatnie 3 msc</h3>
+            <Button
+                size="small"
+                variant="outlined"
+                startIcon={<FiRefreshCw />}
+                onClick={() => void loadUserCounts()}
+                sx={{ textTransform: 'none', borderRadius: 1, fontWeight: 600 }}
+            >
+                Refresh
+            </Button>
+        </Box>
         <Box sx={{
             height: 400,
             marginTop: "20px",
@@ -206,16 +219,16 @@ export default function MainPlot() {
                     noData: 'Select some data to display.',
                 }}
                 series={[
-                    { data: dailyCounts["logins"], label: 'logins', color: '#FF0000' },
-                    { data: dailyCounts["companyCreations"], label: 'companyCreations', color: '#0000FF' },
+                    { data: dailyCounts["logins"], label: 'Rejestracje', color: seriesColors[0] },
+                    { data: dailyCounts["companyCreations"], label: 'Oferenci', color: seriesColors[1] },
                     {
-                        data: dailyCounts["institutionCreations"], label: 'institutionCreations', color: '#00FF00'
+                        data: dailyCounts["institutionCreations"], label: 'Placówki', color: seriesColors[2]
                     },
                     {
-                        data: dailyCounts["seniorOfferCreations"], label: 'seniorOfferCreations', color: '#ff6f00'
+                        data: dailyCounts["seniorOfferCreations"], label: 'Oferty dla Seniora', color: seriesColors[3]
                     },
                     {
-                        data: dailyCounts["institutionOfferCreations"], label: 'institutionOfferCreations', color: '#ff6f00'
+                        data: dailyCounts["institutionOfferCreations"], label: 'Oferty dla firm', color: seriesColors[4]
                     },
                 ]}
                 xAxis={[{ scaleType: 'point', data: dailyCounts["xLabels"], height: 28 }]}
@@ -230,7 +243,7 @@ export default function MainPlot() {
             />
 
         </Box>
+    </>
 
-    );
 
 }

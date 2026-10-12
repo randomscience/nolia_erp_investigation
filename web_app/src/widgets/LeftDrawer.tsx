@@ -17,7 +17,7 @@ export const LeftDrawer: React.FC<{
 }> = (props) => {
 
     return <Drawer anchor="left" open={props.drawerOpen} onClose={props.onClose}>
-        <Box sx={{ width: 320, maxWidth: '85vw', p: 3 }} role="presentation">
+        <Box sx={{ width: 320, maxWidth: '85vw', minHeight: '100vh', boxSizing: 'border-box', p: 3, display: 'flex', flexDirection: 'column' }} role="presentation">
             <IconButton aria-label="Close menu" onClick={props.onClose} sx={{ display: 'block', ml: 'auto' }}>
                 <FiX size={24} />
             </IconButton>
@@ -31,6 +31,9 @@ export const LeftDrawer: React.FC<{
                 Switch to {props.colorMode === 'light' ? 'dark' : 'light'} mode
             </Button>
             <button onClick={props.onLogout}>Logout</button>
+            <Box sx={{ mt: 'auto', pt: 2, borderTop: 1, borderColor: 'divider', color: 'text.secondary', fontSize: 12 }}>
+                v0.0.1
+            </Box>
         </Box>
     </Drawer>
 }

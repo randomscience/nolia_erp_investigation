@@ -17,4 +17,4 @@ export const pocketbaseUrl = backendEnvs[backendEnv];
 export const pb = new PocketBase(pocketbaseUrl);
 
 
-export const sessionDurationMs = 15 * 60 * 1000 * 100;
+export const sessionDurationMs = 15 * 60 * 1000;

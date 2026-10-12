@@ -1,18 +1,17 @@
 
-import IconButton from '@mui/material/IconButton';
-
-import { useState } from 'react';
 import '@xyflow/react/dist/style.css';
-import { backendEnv, pb } from '../constants';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
 import Logo from '../assets/nolia_logo_poziom_5.svg'
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+
 import { FiMenu } from "react-icons/fi";
 import { LeftDrawer } from './LeftDrawer';
 import { SessionTimer } from './SessionTimer';
-
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import { backendEnv, pb } from '../constants';
+import { useState } from 'react';
 
 export const AppBar: React.FC<{
     onLogout: () => void;
@@ -45,7 +44,7 @@ export const AppBar: React.FC<{
                     labelId="loaded-list-label"
                     id="loaded-list-select"
                     value={"val"}
-                    label="List">
+                    label="User email">
                     <MenuItem value="val">{pb.authStore.model?.email}</MenuItem>
 
                 </Select>
@@ -56,8 +55,7 @@ export const AppBar: React.FC<{
                     labelId="loaded-list-label"
                     id="loaded-list-select"
                     value={"val"}
-                    label="List"
-
+                    label="Backend environment"
                 >
                     <MenuItem value="val">{backendEnv}</MenuItem>
 
