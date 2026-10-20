@@ -1,7 +1,9 @@
 {
+
   "name": "web_app",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
+
   "homepage": "https://randomscience.github.io/nolia_erp_investigation",
   "type": "module",
   "scripts": {
