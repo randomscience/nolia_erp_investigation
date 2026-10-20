@@ -110,7 +110,7 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
 
     {selectedList === 'users' ? <RegisteredUsers onSelect={(newRecordModel) => setSelectedRecord(newRecordModel)} selectedUser={selectedRecord} /> : <CreatedCompanies onSelect={(newRecordModel) => setSelectedRecord(newRecordModel)} selectedCompany={selectedRecord} />}
 
-    {selectedRecord && selectedList === 'users' && <ManagedCompanies userId={selectedRecord.id} onCompaniesLoaded={handleManagedCompaniesLoaded} />}
+    {selectedRecord && selectedList === 'users' && <ManagedCompanies user={selectedRecord} onCompaniesLoaded={handleManagedCompaniesLoaded} />}
 
     {selectedRecord && selectedList === 'users' && <UserGraph colorMode={colorMode} companies={managedCompanies} selectedUser={selectedList === 'users' ? selectedRecord : undefined} />}
 

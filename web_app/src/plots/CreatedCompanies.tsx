@@ -14,10 +14,19 @@ import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
 import type { RecordModel } from 'pocketbase';
 import { pb } from '../constants';
-import { pbItemUrl } from '../helpers/PBFunctions';
+import { formatDate, pbItemUrl } from '../helpers/PBFunctions';
 import { RecordDetailsDialog } from '../widgets/RecordDetailsDialog';
 import { FiEye } from 'react-icons/fi';
 import RadioGroup from '@mui/material/RadioGroup';
+import DownloadExcel from '../widgets/ExportToExcel';
+
+interface TableRowInterface {
+    id: string
+    name: string
+    status: string
+    fillPercentage: string
+    created: string
+}
 
 
 export const CreatedCompanies = ({ onSelect, selectedCompany }: {
@@ -29,8 +38,6 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
     const [loadError, setLoadError] = useState('');
     const [_, setSelected] = useState<String>('');
     const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
-
-
 
     useEffect(() => {
         let isActive = true;
@@ -74,8 +81,27 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
         return sum / noFields;
     }
 
+    function getTableRow(): TableRowInterface[] {
+
+        const result: TableRowInterface[] = []
+        for (var x of companiesList) {
+            result.push({
+                id: x.id,
+                name: x.name || 'Null',
+                status: x.status || 'Null',
+                fillPercentage: `${countFillPercentage(x) * 100 | 0}%`,
+                created: x ? formatDate(new Date(x.created)) : 'Unknown'
+            })
+        }
+        return result;
+
+    };
+
+
     return <Box sx={{ mx: 6, my: 3 }}>
+
         {isLoading ? <CircularProgress size={24} aria-label="Loading users" /> : loadError ? <p>{loadError}</p> : (
+
             <RadioGroup
                 aria-label="Select a user"
                 name="loaded-users"
@@ -98,6 +124,7 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                         <TableBody>
                             {companiesList.map((company: RecordModel) => (
                                 <TableRow
+
                                     key={company.id}
                                     hover
                                     selected={selectedCompany?.id === company.id}
@@ -111,7 +138,7 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                                     <TableCell>{company.name || 'Null'}</TableCell>
                                     <TableCell>{company.status || 'Null'}</TableCell>
                                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
-                                    <TableCell>{company.created ? new Date(company.created).toLocaleDateString() : 'Unknown'}</TableCell>
+                                    <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
                                     <TableCell>
                                         <Tooltip title="View full record">
                                             <IconButton
@@ -134,5 +161,11 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
             </RadioGroup>
         )}
         <RecordDetailsDialog record={detailsRecord} onClose={() => setDetailsRecord(undefined)} />
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+            <DownloadExcel fileName={`Firmy w platformie`} data={getTableRow()} />
+        </Box>
     </Box>;
 }
+
+
+

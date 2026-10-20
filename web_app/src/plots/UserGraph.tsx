@@ -13,6 +13,7 @@ export default function UserGraph({
     colorMode,
     companies,
     selectedUser,
+
 }: {
     colorMode: 'light' | 'dark';
     companies: RecordModel[];

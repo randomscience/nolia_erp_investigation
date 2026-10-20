@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
-
 import { useCallback, useEffect, useState } from 'react';
 import { LineChart, lineClasses } from '@mui/x-charts/LineChart';
 import '@xyflow/react/dist/style.css';
 import { pb } from '../constants';
 import type { RecordModel } from 'pocketbase';
 import { FiRefreshCw } from 'react-icons/fi';
+import { MainButton } from '../widgets/MainButton';
 
 // const dashboardDates = Array.from({ length: 30 }, (_, index) => {
 //     const date = new Date();
@@ -189,20 +188,12 @@ export default function MainPlot() {
         void loadUserCounts();
     }, [loadUserCounts]);
 
-
-    // console.log(dailyCounts)
     return <>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 2, mx: 6, mt: 2 }}>
             <h3 style={{ margin: 0 }}>Aktywność przez ostatnie 3 msc</h3>
-            <Button
-                size="small"
-                variant="outlined"
-                startIcon={<FiRefreshCw />}
-                onClick={() => void loadUserCounts()}
-                sx={{ textTransform: 'none', borderRadius: 1, fontWeight: 600 }}
-            >
-                Refresh
-            </Button>
+
+            <MainButton leftIcon={<FiRefreshCw />} onClick={() => void loadUserCounts()} label={"Refresh"} />
+
         </Box>
         <Box sx={{
             height: 400,
@@ -247,3 +238,6 @@ export default function MainPlot() {
 
 
 }
+
+
+
