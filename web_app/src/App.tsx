@@ -87,7 +87,7 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
     <Routes>
       <Route path="/" element={<MainPlot />} />
       <Route path="/tables" element={<TablesPage colorMode={colorMode} />} />
-      <Route path="/squashDB" element={<SquashDBPage colorMode={colorMode} />} />
+      <Route path="/squashDB" element={<SquashDBPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </Box>;
@@ -134,13 +134,8 @@ function TablesPage({ colorMode }: { colorMode: ColorMode }) {
 
 
 
-function SquashDBPage({ colorMode }: { colorMode: ColorMode }) {
+function SquashDBPage() {
   const [selectedRecord, setSelectedRecord] = useState<RecordModel | undefined>(undefined);
-  const [selectedList, setSelectedList] = useState<'users' | 'companies'>('users');
-  const [managedCompanies, setManagedCompanies] = useState<RecordModel[]>([]);
-  const handleManagedCompaniesLoaded = useCallback((companies: RecordModel[]) => {
-    setManagedCompanies(companies);
-  }, []);
 
   return <>
     <DBSquashTable selectedCompany={selectedRecord} onSelect={(newRecordModel) => setSelectedRecord(newRecordModel)} />

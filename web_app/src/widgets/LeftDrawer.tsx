@@ -54,7 +54,7 @@ export const LeftDrawer: React.FC<{
             </List>
 
             <Box sx={{ mt: 'auto', pt: 2, borderTop: 1, borderColor: 'divider', color: 'text.secondary', fontSize: 12 }}>
-                v0.0.1
+                v0.0.3
             </Box>
         </Box>
     </Drawer>

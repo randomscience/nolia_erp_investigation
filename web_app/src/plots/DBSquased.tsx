@@ -2,8 +2,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,7 +12,6 @@ import { useEffect, useState } from 'react';
 import type { RecordModel } from 'pocketbase';
 import { pb } from '../constants';
 import { formatDate, pbItemUrl } from '../helpers/PBFunctions';
-import { FiEye } from 'react-icons/fi';
 import DownloadExcel from '../widgets/ExportToExcel';
 import { countFillPercentage, formatAddress, formatGPS, formatZipCode } from './CompanyTableHelpers';
 
@@ -42,7 +39,6 @@ export const DBSquashTable = ({ onSelect }: {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
 
-    const [_, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
 
     useEffect(() => {
         let isActive = true;
