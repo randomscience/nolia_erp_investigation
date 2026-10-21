@@ -110,6 +110,8 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                                 <TableCell>Address</TableCell>
                                 <TableCell>ZipCode</TableCell>
                                 <TableCell>GPS</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Phone</TableCell>
                                 <TableCell>Fill %</TableCell>
                                 <TableCell>Created</TableCell>
                                 <TableCell>Details</TableCell>
@@ -133,6 +135,8 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                                     <TableCell>{formatAddress(company)}</TableCell>
                                     <TableCell>{formatZipCode(company)}</TableCell>
                                     <TableCell> <a href={`https://www.google.com/maps?q=${formatGPS(company)}`}>{formatGPS(company)}</a> </TableCell>
+                                    <TableCell>{company.email || 'Null'}</TableCell>
+                                    <TableCell>{company.phone || 'Null'}</TableCell>
                                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
                                     <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
                                     <TableCell>

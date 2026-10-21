@@ -41,8 +41,8 @@ export const DBSquashTable = ({ onSelect }: {
     const [companiesList, setCompaniesList] = useState<RecordModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
-    const [_, setSelected] = useState<String>('');
-    const [detailsRecord, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
+
+    const [_, setDetailsRecord] = useState<RecordModel | undefined>(undefined);
 
     useEffect(() => {
         let isActive = true;
@@ -96,20 +96,7 @@ export const DBSquashTable = ({ onSelect }: {
                     <TableCell>{company.phone || 'Null'}</TableCell>
                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
                     <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
-                    <TableCell>
-                        <Tooltip title="View full record">
-                            <IconButton
-                                aria-label={`View details for ${company.name || company.id}`}
-                                size="small"
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    setDetailsRecord(company);
-                                }}
-                            >
-                                <FiEye />
-                            </IconButton>
-                        </Tooltip>
-                    </TableCell>
+
                 </TableRow >)
         }
         return rows;
@@ -164,7 +151,6 @@ export const DBSquashTable = ({ onSelect }: {
                             <TableCell>Phone</TableCell>
                             <TableCell>Fill %</TableCell>
                             <TableCell>Created</TableCell>
-                            <TableCell>Details</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
