@@ -10,6 +10,7 @@ import Select from '@mui/material/Select';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import '@xyflow/react/dist/style.css';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/login';
 import { pb, sessionDurationMs, sessionExpiryStorageKey } from './constants';
 import MainPlot from './plots/MainPlot';
@@ -21,6 +22,7 @@ import type { RecordModel } from 'pocketbase';
 import { RegisteredUsers } from './plots/RegisteredUsers';
 import { CreatedCompanies } from './plots/CreatedCompanies';
 import { ManagedCompanies } from './plots/ManagedCompanies';
+import { DBSquashTable } from './plots/DBSquased';
 
 type ColorMode = 'light' | 'dark';
 const colorModeStorageKey = 'nolia-color-mode';
@@ -59,12 +61,14 @@ function App() {
     setColorMode((currentMode) => currentMode === 'light' ? 'dark' : 'light');
   }, []);
 
-  return <ThemeProvider theme={theme}>
-    <CssBaseline />
-    {isLoggedIn
-      ? <Dashboard onLogout={handleLogout} colorMode={colorMode} onToggleColorMode={handleToggleColorMode} />
-      : <Login onLogin={handleLogin} />}
-  </ThemeProvider>;
+  return <HashRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {isLoggedIn
+        ? <Dashboard onLogout={handleLogout} colorMode={colorMode} onToggleColorMode={handleToggleColorMode} />
+        : <Login onLogin={handleLogin} />}
+    </ThemeProvider>
+  </HashRouter>;
 }
 
 export default App
@@ -74,6 +78,22 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
   colorMode: ColorMode;
   onToggleColorMode: () => void;
 }) {
+  return <Box sx={{
+    width: '100%',
+    height: '100%',
+
+  }}>
+    <AppBar onLogout={onLogout} colorMode={colorMode} onToggleColorMode={onToggleColorMode} />
+    <Routes>
+      <Route path="/" element={<MainPlot />} />
+      <Route path="/tables" element={<TablesPage colorMode={colorMode} />} />
+      <Route path="/squashDB" element={<SquashDBPage colorMode={colorMode} />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  </Box>;
+}
+
+function TablesPage({ colorMode }: { colorMode: ColorMode }) {
   const [selectedRecord, setSelectedRecord] = useState<RecordModel | undefined>(undefined);
   const [selectedList, setSelectedList] = useState<'users' | 'companies'>('users');
   const [managedCompanies, setManagedCompanies] = useState<RecordModel[]>([]);
@@ -81,13 +101,7 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
     setManagedCompanies(companies);
   }, []);
 
-  return <Box sx={{
-    width: '100%',
-    height: '100%',
-
-  }}>
-    <AppBar onLogout={onLogout} colorMode={colorMode} onToggleColorMode={onToggleColorMode} />
-    <MainPlot />
+  return <>
     <Box sx={{ mx: 6, mt: 3 }}>
       <FormControl size="small" sx={{ minWidth: 220 }}>
         <InputLabel id="loaded-list-label">List</InputLabel>
@@ -104,6 +118,7 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
         >
           <MenuItem value="users">Registered users</MenuItem>
           <MenuItem value="companies">Created companies</MenuItem>
+
         </Select>
       </FormControl>
     </Box>
@@ -114,5 +129,20 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
 
     {selectedRecord && selectedList === 'users' && <UserGraph colorMode={colorMode} companies={managedCompanies} selectedUser={selectedList === 'users' ? selectedRecord : undefined} />}
 
-  </Box>
+  </>;
+}
+
+
+
+function SquashDBPage({ colorMode }: { colorMode: ColorMode }) {
+  const [selectedRecord, setSelectedRecord] = useState<RecordModel | undefined>(undefined);
+  const [selectedList, setSelectedList] = useState<'users' | 'companies'>('users');
+  const [managedCompanies, setManagedCompanies] = useState<RecordModel[]>([]);
+  const handleManagedCompaniesLoaded = useCallback((companies: RecordModel[]) => {
+    setManagedCompanies(companies);
+  }, []);
+
+  return <>
+    <DBSquashTable selectedCompany={selectedRecord} onSelect={(newRecordModel) => setSelectedRecord(newRecordModel)} />
+  </>;
 }

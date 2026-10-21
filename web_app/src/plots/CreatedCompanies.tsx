@@ -19,15 +19,18 @@ import { RecordDetailsDialog } from '../widgets/RecordDetailsDialog';
 import { FiEye } from 'react-icons/fi';
 import RadioGroup from '@mui/material/RadioGroup';
 import DownloadExcel from '../widgets/ExportToExcel';
+import { countFillPercentage, formatAddress, formatGPS, formatZipCode } from './CompanyTableHelpers';
 
 interface TableRowInterface {
-    id: string
-    name: string
-    status: string
-    fillPercentage: string
-    created: string
+    id: string | undefined
+    name: string | undefined
+    status: string | undefined
+    address: string | undefined
+    zipCode: string | undefined
+    gps: string | undefined
+    fillPercentage: string | undefined
+    created: string | undefined
 }
-
 
 export const CreatedCompanies = ({ onSelect, selectedCompany }: {
     onSelect: (v: RecordModel) => void;
@@ -48,7 +51,7 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                 pb.autoCancellation(false);
                 const companies = await pb.collection('service_hosts').getFullList({
                     sort: 'created',
-
+                    expand: 'addresses'
                 });
                 if (isActive) setCompaniesList(companies);
             } catch (error) {
@@ -66,21 +69,6 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
         };
     }, []);
 
-    function countFillPercentage(company: RecordModel) {
-
-        var sum = 0;
-        var noFields = 0;
-        for (var i = 0; i < Object.values(company).length; i++) {
-            // if we have one of: "", null, undefined, [] in db, than the value is not provided.
-            noFields++;
-            var val = Object.values(company)[i]
-            if (!(val == "" || val == null)) sum++;
-
-        }
-
-        return sum / noFields;
-    }
-
     function getTableRow(): TableRowInterface[] {
 
         const result: TableRowInterface[] = []
@@ -89,6 +77,9 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                 id: x.id,
                 name: x.name || 'Null',
                 status: x.status || 'Null',
+                address: formatAddress(x),
+                zipCode: formatZipCode(x),
+                gps: formatGPS(x),
                 fillPercentage: `${countFillPercentage(x) * 100 | 0}%`,
                 created: x ? formatDate(new Date(x.created)) : 'Unknown'
             })
@@ -116,7 +107,10 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                                 <TableCell>Id</TableCell>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>FillPercentage</TableCell>
+                                <TableCell>Address</TableCell>
+                                <TableCell>ZipCode</TableCell>
+                                <TableCell>GPS</TableCell>
+                                <TableCell>Fill %</TableCell>
                                 <TableCell>Created</TableCell>
                                 <TableCell>Details</TableCell>
                             </TableRow>
@@ -124,7 +118,6 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                         <TableBody>
                             {companiesList.map((company: RecordModel) => (
                                 <TableRow
-
                                     key={company.id}
                                     hover
                                     selected={selectedCompany?.id === company.id}
@@ -137,6 +130,9 @@ export const CreatedCompanies = ({ onSelect, selectedCompany }: {
                                     <TableCell><a href={pbItemUrl('service_hosts', company.id)}>{company.id || 'Null'}</a></TableCell>
                                     <TableCell>{company.name || 'Null'}</TableCell>
                                     <TableCell>{company.status || 'Null'}</TableCell>
+                                    <TableCell>{formatAddress(company)}</TableCell>
+                                    <TableCell>{formatZipCode(company)}</TableCell>
+                                    <TableCell> <a href={`https://www.google.com/maps?q=${formatGPS(company)}`}>{formatGPS(company)}</a> </TableCell>
                                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
                                     <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
                                     <TableCell>

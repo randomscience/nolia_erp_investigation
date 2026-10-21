@@ -2,10 +2,14 @@
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 import '@xyflow/react/dist/style.css';
 
 import { FiMoon, FiSun, FiX, FiLogOut } from "react-icons/fi";
+import { NavLink } from 'react-router-dom';
 import { MainButton } from './MainButton';
 
 export const LeftDrawer: React.FC<{
@@ -33,7 +37,21 @@ export const LeftDrawer: React.FC<{
                 leftIcon={<FiLogOut style={{ transform: "rotate(180deg)" }} />}
                 onClick={props.onLogout}
                 label={"Wyloguj"} />
+            <div style={{ "height": "12px" }} />
+            <h2>Sections</h2>
 
+            <List sx={{ mb: 2 }}>
+                <ListItemButton component={NavLink} to="/" end onClick={props.onClose}>
+                    <ListItemText primary="Main plot" />
+                </ListItemButton>
+                <ListItemButton component={NavLink} to="/tables" onClick={props.onClose}>
+                    <ListItemText primary="Tables and users" />
+                </ListItemButton>
+
+                <ListItemButton component={NavLink} to="/squashDB" onClick={props.onClose}>
+                    <ListItemText primary="Squash DB" />
+                </ListItemButton>
+            </List>
 
             <Box sx={{ mt: 'auto', pt: 2, borderTop: 1, borderColor: 'divider', color: 'text.secondary', fontSize: 12 }}>
                 v0.0.1
