@@ -51,6 +51,40 @@ export function formatAddress(data: RecordModel): string {
 }
 
 
+export function formatInnerAddress(data: RecordModel): string {
+    if (data.expand?.invoice_data === undefined) return "Null"
+
+    if (data.expand?.invoice_data?.expand?.address === undefined) return "Null"
+
+
+    var city = format(data.expand?.invoice_data?.expand?.address.city)
+    var home_number = format(data.expand?.invoice_data?.expand?.address.home_number)
+    var flat_number = format(data.expand?.invoice_data?.expand?.address.flat_number)
+    var street = format(data.expand?.invoice_data?.expand?.address.street)
+
+
+    if ([city
+        , flat_number
+        , home_number
+        , street
+    ].every(v => v === '-')) {
+        return "Null"
+    }
+
+    return `${city} ul.${street} ${home_number}/${flat_number}`
+
+}
+export function formatInnerZipCode(data: RecordModel): string {
+    if (data.expand?.invoice_data === undefined) return "Null"
+
+    if (data.expand?.invoice_data?.expand?.address === undefined) return "Null"
+    var zipcode = format(data.expand?.invoice_data?.expand?.zipcode)
+    if (zipcode === "-") return "Null"
+    return zipcode
+}
+
+
+
 export function countFillPercentage(company: RecordModel) {
 
     var sum = 0;

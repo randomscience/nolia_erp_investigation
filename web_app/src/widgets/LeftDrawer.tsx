@@ -51,6 +51,9 @@ export const LeftDrawer: React.FC<{
                 <ListItemButton component={NavLink} to="/squashDB" onClick={props.onClose}>
                     <ListItemText primary="Squash DB" />
                 </ListItemButton>
+                <ListItemButton component={NavLink} to="/invoiceData" onClick={props.onClose}>
+                    <ListItemText primary="Invoice Data" />
+                </ListItemButton>
             </List>
 
             <Box sx={{ mt: 'auto', pt: 2, borderTop: 1, borderColor: 'divider', color: 'text.secondary', fontSize: 12 }}>

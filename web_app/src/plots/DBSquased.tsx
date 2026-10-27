@@ -18,6 +18,8 @@ import { countFillPercentage, formatAddress, formatGPS, formatZipCode } from './
 interface SquashedDBTableRowInterface {
     id: string | undefined
     name: string | undefined
+    type: string
+
     adminName: string,
     adminSurname: string,
     adminEmail: string,
@@ -27,14 +29,13 @@ interface SquashedDBTableRowInterface {
     gps: string | undefined
     phone: string,
     email: string,
+    website: string
     fillPercentage: string | undefined
     created: string | undefined
 }
 
-export const DBSquashTable = ({ onSelect }: {
-    onSelect: (v: RecordModel) => void;
-    selectedCompany: RecordModel | undefined;
-}) => {
+export const DBSquashTable = () => {
+
     const [companiesList, setCompaniesList] = useState<RecordModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
@@ -76,20 +77,22 @@ export const DBSquashTable = ({ onSelect }: {
                 <TableRow
                     key={company.id + "_" + company.expand?.admins[adminIndex]?.id}
                     hover
-
-                    onClick={() => onSelect(company)}
                     sx={{ cursor: 'pointer' }}
                 >
                     <TableCell><a href={pbItemUrl('service_hosts', company.id)}>{company.id || 'Null'}</a></TableCell>
                     <TableCell>{`${company.expand?.admins[adminIndex]?.name} ${company.expand?.admins[adminIndex]?.surname}` || "Null"}</TableCell>
                     <TableCell>{company.expand?.admins[adminIndex]?.email || "Null"}</TableCell>
                     <TableCell>{company.name || 'Null'}</TableCell>
+                    <TableCell>{company.type || 'Null'}</TableCell>
                     <TableCell>{company.status || 'Null'}</TableCell>
+
                     <TableCell>{formatAddress(company)}</TableCell>
                     <TableCell>{formatZipCode(company)}</TableCell>
                     <TableCell> <a href={`https://www.google.com/maps?q=${formatGPS(company)}`}>{formatGPS(company)}</a> </TableCell>
                     <TableCell>{company.email || 'Null'}</TableCell>
                     <TableCell>{company.phone || 'Null'}</TableCell>
+                    <TableCell>{company.website || 'Null'}</TableCell>
+
                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
                     <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
 
@@ -110,12 +113,16 @@ export const DBSquashTable = ({ onSelect }: {
                     adminName: x.expand?.admins[adminIndex]?.name,
                     adminSurname: x.expand?.admins[adminIndex]?.surname,
                     adminEmail: x.expand?.admins[adminIndex]?.email,
+                    type: x.type,
+                    // classificationClass: x.expanded?.service_host_recipients.classificationClass || "Null",
+                    // classificationForm: x.expanded?.service_host_recipients.classificationForm || "Null",
                     status: x.status || 'Null',
                     address: formatAddress(x),
                     zipCode: formatZipCode(x),
                     gps: formatGPS(x),
                     email: x.email || 'Null',
                     phone: x.phone || 'Null',
+                    website: x.website || 'Null',
                     fillPercentage: `${countFillPercentage(x) * 100 | 0}%`,
                     created: x ? formatDate(new Date(x.created)) : 'Unknown'
                 })
@@ -139,12 +146,15 @@ export const DBSquashTable = ({ onSelect }: {
                             <TableCell>Admin</TableCell>
                             <TableCell>Admin Email</TableCell>
                             <TableCell>Name</TableCell>
+                            <TableCell>Type</TableCell>
+                            <TableCell>Classification Class</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>ZipCode</TableCell>
                             <TableCell>GPS</TableCell>
                             <TableCell>Email</TableCell>
                             <TableCell>Phone</TableCell>
+                            <TableCell>Website</TableCell>
                             <TableCell>Fill %</TableCell>
                             <TableCell>Created</TableCell>
                         </TableRow>

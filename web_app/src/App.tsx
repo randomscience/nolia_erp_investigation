@@ -23,14 +23,12 @@ import { RegisteredUsers } from './plots/RegisteredUsers';
 import { CreatedCompanies } from './plots/CreatedCompanies';
 import { ManagedCompanies } from './plots/ManagedCompanies';
 import { DBSquashTable } from './plots/DBSquased';
+import { InvoiceData } from './plots/InvoiceData';
 
 type ColorMode = 'light' | 'dark';
 const colorModeStorageKey = 'nolia-color-mode';
 
-
-
 function App() {
-
 
   const [isLoggedIn, setIsLoggedIn] = useState(pb.authStore.isValid);
   const [colorMode, setColorMode] = useState<ColorMode>(() =>
@@ -87,7 +85,8 @@ function Dashboard({ onLogout, colorMode, onToggleColorMode }: {
     <Routes>
       <Route path="/" element={<MainPlot />} />
       <Route path="/tables" element={<TablesPage colorMode={colorMode} />} />
-      <Route path="/squashDB" element={<SquashDBPage />} />
+      <Route path="/squashDB" element={<DBSquashTable />} />
+      <Route path="/invoiceData" element={<InvoiceData />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </Box>;
@@ -132,12 +131,3 @@ function TablesPage({ colorMode }: { colorMode: ColorMode }) {
   </>;
 }
 
-
-
-function SquashDBPage() {
-  const [selectedRecord, setSelectedRecord] = useState<RecordModel | undefined>(undefined);
-
-  return <>
-    <DBSquashTable selectedCompany={selectedRecord} onSelect={(newRecordModel) => setSelectedRecord(newRecordModel)} />
-  </>;
-}
