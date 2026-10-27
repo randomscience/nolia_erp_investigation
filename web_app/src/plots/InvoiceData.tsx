@@ -18,9 +18,9 @@ import TableRow from '@mui/material/TableRow';
 import { useEffect, useState } from 'react';
 import type { RecordModel } from 'pocketbase';
 import { pb } from '../constants';
-import { formatDate, pbItemUrl } from '../helpers/PBFunctions';
+import { pbItemUrl } from '../helpers/PBFunctions';
 import DownloadExcel from '../widgets/ExportToExcel';
-import { countFillPercentage, formatAddress, formatGPS, formatInnerAddress, formatInnerZipCode, formatZipCode } from './CompanyTableHelpers';
+import { formatAddress, formatInnerAddress, formatInnerZipCode, formatZipCode } from './CompanyTableHelpers';
 import { MainButton } from '../widgets/MainButton';
 import { FiCopy, FiMail } from 'react-icons/fi';
 

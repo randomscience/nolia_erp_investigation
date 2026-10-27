@@ -147,7 +147,6 @@ export const DBSquashTable = () => {
                             <TableCell>Admin Email</TableCell>
                             <TableCell>Name</TableCell>
                             <TableCell>Type</TableCell>
-                            <TableCell>Classification Class</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>ZipCode</TableCell>
