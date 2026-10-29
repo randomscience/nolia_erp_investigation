@@ -24,6 +24,8 @@ interface SquashedDBTableRowInterface {
     adminSurname: string,
     adminEmail: string,
     status: string | undefined
+    classificationClass: string
+    classificationForm: string
     address: string | undefined
     zipCode: string | undefined
     gps: string | undefined
@@ -35,10 +37,20 @@ interface SquashedDBTableRowInterface {
 }
 
 export const DBSquashTable = () => {
-
     const [companiesList, setCompaniesList] = useState<RecordModel[]>([]);
+    const [companyRecipients, setCompanyRecipients] = useState<RecordModel[]>([]);
+
+
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
+
+    function getClassAndTag(companyId: string): [string | undefined, string | undefined] {
+
+        for (const model of companyRecipients) {
+            if (model.service_host == companyId) return [model.classification_class, model.classification_form]
+        }
+        return [undefined, undefined]
+    }
 
 
     useEffect(() => {
@@ -60,6 +72,17 @@ export const DBSquashTable = () => {
             } finally {
                 if (isActive) setIsLoading(false);
             }
+
+            try {
+                const recipients = await pb.collection('service_host_recipients').getFullList({});
+                if (isActive) setCompanyRecipients(recipients);
+            } catch (error) {
+                if (isActive) {
+                    setLoadError(error instanceof Error ? error.message : 'Unable to load service_host_recipients.');
+                }
+            } finally {
+                if (isActive) setIsLoading(false);
+            }
         };
 
         void loadCompanies();
@@ -71,7 +94,13 @@ export const DBSquashTable = () => {
     function expandCompanies(company: RecordModel): React.JSX.Element[] {
         var rows = [];
         console.log(company.expand?.admins[0]);
+        const website = typeof company.website === 'string' ? company.website.trim() : '';
+        const websiteUrl = website
+            ? (/^https?:\/\//i.test(website) ? website : `https://${website}`)
+            : '';
         for (var adminIndex = 0; adminIndex < company.expand?.admins.length; adminIndex++) {
+
+            const [classificationClass, classificationForm] = getClassAndTag(company.id);
 
             rows.push(
                 <TableRow
@@ -85,13 +114,35 @@ export const DBSquashTable = () => {
                     <TableCell>{company.name || 'Null'}</TableCell>
                     <TableCell>{company.type || 'Null'}</TableCell>
                     <TableCell>{company.status || 'Null'}</TableCell>
+                    <TableCell>{classificationClass || 'Null'}</TableCell>
+                    <TableCell>{classificationForm || 'Null'}</TableCell>
+
 
                     <TableCell>{formatAddress(company)}</TableCell>
                     <TableCell>{formatZipCode(company)}</TableCell>
                     <TableCell> <a href={`https://www.google.com/maps?q=${formatGPS(company)}`}>{formatGPS(company)}</a> </TableCell>
                     <TableCell>{company.email || 'Null'}</TableCell>
                     <TableCell>{company.phone || 'Null'}</TableCell>
-                    <TableCell>{company.website || 'Null'}</TableCell>
+                    <TableCell>
+                        {websiteUrl
+                            ? <a
+                                href={websiteUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title={website}
+                                style={{
+                                    display: 'inline-block',
+                                    maxWidth: '20ch',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    verticalAlign: 'bottom',
+                                }}
+                            >
+                                {website}
+                            </a>
+                            : 'Null'}
+                    </TableCell>
 
                     <TableCell>{`${countFillPercentage(company) * 100 | 0}%`}</TableCell>
                     <TableCell>{company.created ? formatDate(new Date(company.created)) : 'Unknown'}</TableCell>
@@ -107,6 +158,7 @@ export const DBSquashTable = () => {
         const result: SquashedDBTableRowInterface[] = []
         for (var x of companiesList) {
             for (var adminIndex = 0; adminIndex < x.expand?.admins.length; adminIndex++) {
+                const [classificationClass, classificationForm] = getClassAndTag(x.id);
                 result.push({
                     id: x.id,
                     name: x.name || 'Null',
@@ -114,8 +166,8 @@ export const DBSquashTable = () => {
                     adminSurname: x.expand?.admins[adminIndex]?.surname,
                     adminEmail: x.expand?.admins[adminIndex]?.email,
                     type: x.type,
-                    // classificationClass: x.expanded?.service_host_recipients.classificationClass || "Null",
-                    // classificationForm: x.expanded?.service_host_recipients.classificationForm || "Null",
+                    classificationClass: classificationClass || 'Null',
+                    classificationForm: classificationForm || 'Null',
                     status: x.status || 'Null',
                     address: formatAddress(x),
                     zipCode: formatZipCode(x),
@@ -148,6 +200,8 @@ export const DBSquashTable = () => {
                             <TableCell>Name</TableCell>
                             <TableCell>Type</TableCell>
                             <TableCell>Status</TableCell>
+                            <TableCell>Class</TableCell>
+                            <TableCell>Form</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>ZipCode</TableCell>
                             <TableCell>GPS</TableCell>
@@ -172,6 +226,3 @@ export const DBSquashTable = () => {
         </Box>
     </Box>;
 }
-
-
-
